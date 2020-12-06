@@ -9,3 +9,17 @@ Why doesn't `lein repl` work with `[nrepl "0.3.1"]`?
 `require` in repl
 
     (require '(clojure.tools [logging :as log]))
+
+## 12/6/20
+
+Questions
+* Can the record values have whitespace needing trimming? 
+* Can the input format of DOB fields be assumed to be fixed?
+* Sort order = natural?
+* A single input file has only one type of record, and the delimiter is known ahead of time?
+* Records are newline-delimited?
+* What about this
+> ...a command line app that takes as input a file...
+> The input is 3 files, each containing records stored in a different format
+  Should it take an argument which is the name of a file? List of N filenames? How should delimiter
+  of each be indicated?

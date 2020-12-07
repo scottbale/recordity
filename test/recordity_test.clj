@@ -30,3 +30,18 @@
            (record "Kelliot" "Kris" "f" "red" "2/13/61")
            (record "Jabar" "Aaron" "m" "blue" "8/12/55")])
          )))
+
+
+(deftest testSortByLastNameDesc
+  (is (= [
+          (record "Smith" "John" "m" "green" "1/2/53")
+          (record "Kelliot" "Kris" "f" "red" "2/13/61")
+          (record "Jabar" "Aaron" "m" "blue" "8/12/55")
+          ]
+
+         (sort
+          (comparators :lastNameDesc)
+          [(record "Smith" "John" "m" "green" "1/2/53")
+           (record "Jabar" "Aaron" "m" "blue" "8/12/55")
+           (record "Kelliot" "Kris" "f" "red" "2/13/61")])
+         )))

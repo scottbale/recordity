@@ -16,12 +16,11 @@
   (apply ->Record (str/split r delimiter)))
 
 (def comparators
-  {:genderThenLastName1 (fn [{gx :gender lnx :lastname}
-                             {gy :gender lny :lastname}]
-                          (if (= gx gy)
-                            (compare lnx lny)
-                            (compare gx gy)))
-   :genderThenLastName (fn [x y]
-                         ;; https://clojure.org/guides/comparators
-                         (compare [(:gender x) (:lastname x)]
-                                  [(:gender y) (:lastname y)]))})
+  {:genderThenLastName 
+   (fn [x y]
+     ;; https://clojure.org/guides/comparators
+     (compare [(:gender x) (:lastname x)]
+              [(:gender y) (:lastname y)]))
+   :lastNameDesc
+   (fn [x y]
+     (compare (:lastname y) (:lastname x)))})

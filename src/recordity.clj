@@ -7,5 +7,10 @@
                  :comma #","
                  :space #" "})
 
+(defrecord Record [lastname firstname gender color dob])
+
+(defn record [lastname firstname gender color dob]
+  (->Record lastname firstname gender color dob))
+
 (defn parseRecord [delimiter ^String r]
-  (zipmap [:lastname :firstname :gender :favcolor :dob] (str/split r delimiter)))
+  (apply ->Record (str/split r delimiter)))

@@ -16,3 +16,17 @@
 (deftest testParseSpaceDelimited
   (is (= (record "Smith" "John" "m" "green" "1/2/53")
          (parseRecord (delimiters :space) "Smith John m green 1/2/53"))))
+
+(deftest testSortByGenderThenLastName
+  (is (= [
+          (record "Kelliot" "Kris" "f" "red" "2/13/61")
+          (record "Jabar" "Aaron" "m" "blue" "8/12/55")
+          (record "Smith" "John" "m" "green" "1/2/53")
+          ]
+
+         (sort
+          (comparators :genderThenLastName)
+          [(record "Smith" "John" "m" "green" "1/2/53")
+           (record "Kelliot" "Kris" "f" "red" "2/13/61")
+           (record "Jabar" "Aaron" "m" "blue" "8/12/55")])
+         )))

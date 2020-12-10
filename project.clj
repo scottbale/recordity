@@ -5,12 +5,9 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "1.0.194"]
                  [org.clojure/tools.logging "1.1.0"]
-                 [org.clojure/tools.nrepl "0.2.13"]
-                 ;; [nrepl "0.3.1"] TODO
                  [cheshire "5.10.0"]
                  [org.apache.logging.log4j/log4j-api "2.13.3"]
                  [org.apache.logging.log4j/log4j-core "2.13.3"]
-                 ;; [org.apache.logging.log4j/log4j-slf4j-impl "2.13.3"]
                  ]
   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
 )

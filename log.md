@@ -25,3 +25,18 @@ Questions
 > The input is 3 files, each containing records stored in a different format
   Should it take an argument which is the name of a file? List of N filenames? How should delimiter
   of each be indicated?
+
+## 12/10/20
+
+Added `clojure.java-time` dep, using for dates
+
+## 12/12/20
+
+Questions
+* Delimiters in data - can I assume none of the three types of delimiters
+  are in _any_ record type? If not, then that implies the record format might need to keep track of
+  the delimiter it was parsed with for possible round-tripping. I.e. if I to-string a record back to
+  a delimited string, from a mixed set of records, how best to do that?
+  * Output as .edn
+  * Output with well-known prefixes (like a map tostring)
+  * User can supply output delimiter via CLI

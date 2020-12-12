@@ -18,8 +18,11 @@
 (defn record [lastname firstname gender color dob]
   (->Record lastname firstname gender color dob))
 
-(defn record-str [{:keys [lastname firstname gender color dob]}]
-  (apply str (interpose " " [lastname firstname gender color (jt/format canonical-date-format dob)])))
+(defn record-str
+  ([rcd]
+   (record-str " " canonical-date-format rcd))
+  ([delim dob-format {:keys [lastname firstname gender color dob]}]
+   (apply str (interpose delim [lastname firstname gender color (jt/format dob-format dob)]))))
 
 (defn parse-date
   "TODO"

@@ -26,7 +26,8 @@
   (is (= (jt/local-date 1953 1 2) (parse-date canonical-date-format "1/2/1953"))))
 
 (deftest test-record-str
-  (is (= "Smith John m green 1/2/1953" (record-str (record "Smith" "John" "m" "green" (jt/local-date 1953 1 2))))))
+  (is (= "Smith John m green 1/2/1953" (record-str (record "Smith" "John" "m" "green" (jt/local-date 1953 1 2)))))
+  (is (= "Smith|John|m|green|1953/1/2" (record-str "|" input-date-format (record "Smith" "John" "m" "green" (jt/local-date 1953 1 2))))))
 
 (deftest test-sort-by-gender-then-last-name
   (is (= [(record "Kelliot" "Kris" "f" "red" (jt/local-date 1961 2 13))

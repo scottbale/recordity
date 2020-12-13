@@ -45,3 +45,5 @@ Generated fake names at https://homepage.net/name_generator/
 
 Made test data files in `test-data/`, generated using some scratch work in commented section of
 `cli_test.clj`. Just getting started on `cli.clj`.
+
+CLI - able to parse multiple filename and multiple delimiter options

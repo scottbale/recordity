@@ -10,6 +10,13 @@
    [cli :refer :all]
    [recordity :as r]))
 
+(deftest test-main-help
+  (is (= 0 (main "-h"))))
+
+(deftest test-main-no-args
+  (is (= 1 (main))))
+
+
 
 (comment
 

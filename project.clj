@@ -12,4 +12,5 @@
                  ]
   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
   :profiles {:dev {:resource-paths ["test-data"]}}
+  :main cli
 )

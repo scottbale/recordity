@@ -53,4 +53,11 @@ CLI - able to parse multiple filename and multiple delimiter options
 Done with CLI.
 
 Ran into an interesting thing where a LazySeq passed to `log/debugf` produced a toString of
-`LazySeq`, whereas passing it to `log/debug` did the desired thing.
+`LazySeq`, whereas passing it to `log/debug` did the desired thing. See also
+https://stackoverflow.com/a/23407403/2495576
+
+## 12/14/20
+
+Test CLI w/ `lein run`, e.g.
+
+    lein run -- -f pipe-delimited.txt

@@ -47,3 +47,10 @@ Made test data files in `test-data/`, generated using some scratch work in comme
 `cli_test.clj`. Just getting started on `cli.clj`.
 
 CLI - able to parse multiple filename and multiple delimiter options
+
+## 12/13/20
+
+Done with CLI.
+
+Ran into an interesting thing where a LazySeq passed to `log/debugf` produced a toString of
+`LazySeq`, whereas passing it to `log/debug` did the desired thing.

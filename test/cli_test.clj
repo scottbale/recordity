@@ -58,8 +58,7 @@
       (is (= expected (take 5 rcds))))))
 
 (deftest test-blarf
-  (let [sw (StringWriter.)
-        expected (str/join ["Young Steven m puce 10/5/1984\n"
+  (let [expected (str/join ["Young Steven m puce 10/5/1984\n"
                             "Young Warren m mauve 7/26/1988\n"
                             "Young Joanne f red 5/12/1977\n"
                             "Young Neil m mauve 10/19/1974\n"

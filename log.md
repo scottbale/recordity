@@ -94,3 +94,28 @@ example curl statements:
 Still need to figure out
 * stopping/starting jetty server
 * cookies/session keys via curl
+
+## 12/18/20
+
+starting jetty server - needed to use `:join? false` option
+cookies/session - needed to stringify UUID session key
+Scratch work in comment block of `restful-test`
+
+Example curl statements:
+
+    curl -sS -X GET -i --header 'Accept: application/json' --header 'Content-Type: application/json' --header 'cookie: recordity=6e144ccf-648f-42d3-ac30-6fafc871c7bc' 'http://localhost:3000/records/gender'
+    curl -sS -X POST -i --header 'Content-Type: application/x-www-form-urlencoded' --header 'cookie: recordity=6e144ccf-648f-42d3-ac30-6fafc871c7bc' 'http://localhost:3000/records' -d 'record=Gartner%2CFarnsworth%2Cm%2Cblue%2C1962%2F11%2F22&delimiter=%2C'
+
+## Appendix - links
+
+* compojure
+  * https://github.com/weavejester/compojure
+  * wiki https://github.com/weavejester/compojure/wiki/Destructuring-Syntax
+  * API https://weavejester.github.io/compojure/compojure.response.html
+* ring
+  * https://github.com/ring-clojure/ring
+  * wiki https://github.com/ring-clojure/ring/wiki/Sessions
+  * API https://ring-clojure.github.io/ring/ring.util.request.html
+* ring-mock https://github.com/ring-clojure/ring-mock
+* ring-defaults https://github.com/ring-clojure/ring-defaults
+* cheshire https://github.com/dakrone/cheshire

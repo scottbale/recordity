@@ -56,13 +56,25 @@
 
 (comment
 
-  ;; jetty server with test records
+  ;; test session with test records, handler
   (require '(cli))
-  (require '(ring.adapter (jetty)))
-  (def session-uuid (java.util.UUID/randomUUID))
+  (def session-uuid (str (java.util.UUID/randomUUID)))
   (def session (atom {session-uuid {:records (set (take 5 (cli/records [["pipe-delimited.txt" "|"]] "G")))}}))
+  (def my-handler (prod-handler session))
+
+  ;; mock requests
+  (my-handler (-> (mock/request :get "/records/gender")
+                  (mock/cookie :recordity session-uuid)))
+
+  (my-handler (-> (mock/request :post "/records")
+                  (mock/body {:record "DeGarmo|Fay|f|grey|1966/5/2"
+                              :delimiter "|"})
+                  (mock/cookie :recordity session-uuid)))
+
+  ;; jetty server
+  (require '(ring.adapter (jetty)))
   (def server (atom nil))
-  (future (reset! server (ring.adapter.jetty/run-jetty (prod-handler session) {:port 3000})))
+  (future (reset! server (ring.adapter.jetty/run-jetty my-handler {:port 3000 :join? false})))
   (.stop @server)
 
 

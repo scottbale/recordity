@@ -61,3 +61,36 @@ https://stackoverflow.com/a/23407403/2495576
 Test CLI w/ `lein run`, e.g.
 
     lein run -- -f pipe-delimited.txt
+
+Starting REST API
+
+## 12/16/20
+
+update README
+
+## 12/17/20
+
+`restful` namespace and tests
+
+example url-encoded body string:
+
+    "record=Barkley%2CFarnsworth%2Cm%2Cbrownish%2C1962%2F11%2F22&delimiter=%2C"
+
+example curl statements:
+
+    $ curl -sS -X POST -i --header 'Content-Type: application/x-www-form-urlencoded' 'http://localhost:3000/records' -d 'record=Gartner%2CFarnsworth%2Cm%2Cblue%2C1962%2F11%2F22&delimiter=%2C'
+    HTTP/1.1 204 No Content
+    Date: Fri, 18 Dec 2020 03:51:13 GMT
+    Set-Cookie: ring-session=acf8a055-3e7b-41ad-8c91-bb9049ad154f;Path=/;HttpOnly
+    Server: Jetty(9.4.31.v20200723)
+
+    $ curl -sS -X GET -i --header 'Accept: application/json' --header 'Content-Type: application/json' 'http://localhost:3000/records/gender'
+    HTTP/1.1 200 OK
+    Date: Fri, 18 Dec 2020 03:09:06 GMT
+    Content-Type: application/json
+    Content-Length: 2
+    Server: Jetty(9.4.31.v20200723)
+
+Still need to figure out
+* stopping/starting jetty server
+* cookies/session keys via curl

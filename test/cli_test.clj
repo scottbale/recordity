@@ -1,10 +1,9 @@
 (ns cli-test
-  (:use
-   [clojure.test])
   (:require
    [clojure.edn :as edn]
    [clojure.java.io :as io]
    [clojure.string :as str]
+   [clojure.test :refer :all]
    [clojure.tools.logging :as log]
    [java-time :as jt]
    [cli :refer :all]

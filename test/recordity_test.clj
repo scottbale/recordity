@@ -1,7 +1,6 @@
 (ns recordity-test
-  (:use
-   [clojure.test])
   (:require
+   [clojure.test :refer :all]
    [clojure.tools.logging :as log]
    [java-time :as jt]
    [recordity :refer :all]))

@@ -44,11 +44,9 @@
       (is (= 200 status))
       (is (= expected body))))
   (testing "sorted by name"
-    (let [expected (json/generate-string [
-                                          "Smith John m green 1/2/1953"
+    (let [expected (json/generate-string ["Smith John m green 1/2/1953"
                                           "Kelliot Kris f red 2/13/1961"
-                                          "Jabar Aaron m blue 8/12/1955"
-                                          ])
+                                          "Jabar Aaron m blue 8/12/1955"])
           {:keys [status body]} (handler (-> (mock/request :get "/records/name")
                                              (session-records test-records)))]
       (is (= 200 status))

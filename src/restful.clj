@@ -61,4 +61,6 @@
 
 (defn -main
   [& args]
-  (run-jetty (prod-handler) {:port 3000}))
+  (let [port 3000]
+    (log/info "Starting Recordity RESTful API jetty server on port" port)
+    (run-jetty (prod-handler) {:port port})))

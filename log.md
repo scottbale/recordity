@@ -106,6 +106,29 @@ Example curl statements:
     curl -sS -X GET -i --header 'Accept: application/json' --header 'Content-Type: application/json' --header 'cookie: recordity=6e144ccf-648f-42d3-ac30-6fafc871c7bc' 'http://localhost:3000/records/gender'
     curl -sS -X POST -i --header 'Content-Type: application/x-www-form-urlencoded' --header 'cookie: recordity=6e144ccf-648f-42d3-ac30-6fafc871c7bc' 'http://localhost:3000/records' -d 'record=Gartner%2CFarnsworth%2Cm%2Cblue%2C1962%2F11%2F22&delimiter=%2C'
 
+run API with lein:
+
+    lein run restful/-main
+
+Getting some console logging from Jetty - probably it uses logback instead of log4j2?
+
+## 12/20/20
+
+Figuring out how to launch w/ `clojure` and `deps.edn` instead of `lein` and `project.clj`:
+
+CLI
+
+    clojure -M -m cli -h
+
+REST API
+
+    clojure -M -m restful
+
+Updated README
+
+Would be nice to add some additional logging to `restful.clj`, perhaps middleware that logs basic
+stats about the session (session id, count of records) for each request.
+
 ## Appendix - links
 
 * compojure

@@ -119,6 +119,7 @@
   0)
 
 (defn main [& args]
+  (log/info "Starting Recordity CLI with args" args)
   (try
     (let [{:keys [file delim sorting exit-message ok?] :as opts} (validate-args args)]
       (if file

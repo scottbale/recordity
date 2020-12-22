@@ -10,30 +10,25 @@ CLI
 
 To see CLI usage:
 
-```
-clojure -M -m cli -h
-```
+    clojure -M -m cli -h
 
 Output the pipe-delimited file of records (with pipe delimiter being the default, and default sorting)
 
-```
-clojure -M -m cli -f pipe-delimited.txt
-```
+    clojure -M -m cli -f pipe-delimited.txt
 
 Combine multiple files and delimiters, specify sorting
 
-```
-clojure -M -m cli -f pipe-delimited.txt -d "|" -f space-delimited.txt -d " " -f comma-delimited.txt -d "," -s D
-```
+    clojure -M -m cli -f pipe-delimited.txt -d "|" -f space-delimited.txt -d " " -f comma-delimited.txt -d "," -s D
 
-RESTful API
------------
+The three `foo-delimited.txt` files are included as sample resources in the `test-data` directory.
+The CLI will search for each `-f` value first as a file with that name and path, then as a resource.
+
+REST API
+--------
 
 Start up the API in a jetty server instance:
 
-```
-clojure -M -m restful
-```
+    clojure -M -m restful
 
 Here are some sample `curl` commands.
 
@@ -58,15 +53,13 @@ log
 Leiningen
 ---------
 
-Note: `lein` 2.9.x can be used in place of `clojure` to run any of the above commands by substituting `clojure -M -m` with `lein run --` e.g.
+Note: `lein` 2.9.x can be used to run any of the above commands, e.g.
 
-
-```
-lein run -- -f pipe-delimited.txt
-```
+    lein run -- -f pipe-delimited.txt
 or
 
-```
-lein run restful/-main
-```
+    lein run restful/-main
 
+For development I used `lein repl` task with
+[cider-nrepl](https://github.com/clojure-emacs/cider-nrepl) middleware, plus emacs with
+[cider](https://github.com/clojure-emacs/cider).

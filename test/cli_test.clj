@@ -4,6 +4,7 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [clojure.test :refer :all]
+   [clojure.tools.cli :refer [parse-opts]]
    [clojure.tools.logging :as log]
    [java-time :as jt]
    [cli :refer :all]
@@ -17,6 +18,37 @@
   (with-out-str
     (is (= 1 (main)))))
 
+(deftest test-parse-opts
+  (letfn [(parse-opts-util [option-spec id & args]
+            (let [result (parse-opts args [option-spec])]
+              (cond
+                (:errors result) (:errors result)
+                :else (-> result :options id))))]
+    (let [[file-opts delim-opts sort-opts help-opts] cli-options
+          parse-file-opts (partial parse-opts-util file-opts :file)
+          parse-delim-opts (partial parse-opts-util delim-opts :delim)
+          parse-sort-opts (partial parse-opts-util sort-opts :sorting)]
+      (testing "files"
+        (testing "existing resource"
+          (is (= ["comma-delimited.txt"] (parse-file-opts "-f" "comma-delimited.txt"))))
+        (testing "nonexistent file"
+          (is (= ["Failed to validate \"-f nada.txt\": file does not exist."]
+                 (parse-file-opts "-f" "nada.txt")))))
+      (testing "delimiters"
+        (is (= [:comma] (parse-delim-opts "-d" "comma")))
+        (is (= [:space :pipe :comma] (parse-delim-opts "-d" "comma" "-d" "pipe" "-d" "space")))
+        (is (= [:space :pipe :comma] (parse-delim-opts "-d" "COMMA" "-d" "PIPE" "-d" "SPACE")))
+        (testing "errors"
+          (is (= ["Failed to validate \"-d oopsie\""] (parse-delim-opts "-d" "oopsie")))))
+      (testing "sorting"
+        (is (= :D (parse-sort-opts "-s" "D")))
+        (is (= :G (parse-sort-opts "-s" "G")))
+        (is (= :N (parse-sort-opts "-s" "N")))
+        (testing "default"
+          (is (= :N (parse-sort-opts))))
+        (testing "errors"
+          (is (= ["Failed to validate \"-s Q\""] (parse-sort-opts "-s" "Q"))))))))
+
 (deftest test-validate-input-file
   (testing "nonexistent"
     (is (nil? (validate-input-file "not-anything.txt"))))
@@ -27,11 +59,11 @@
 
 (deftest test-zip-opts
   (testing "happy path"
-    (is (= [["comma.txt" ","] ["pipe.txt" "|"]] (zip-opts ["pipe.txt" "comma.txt"] ["|" ","]))))
+    (is (= [["comma.txt" :comma] ["pipe.txt" :pipe]] (zip-opts ["pipe.txt" "comma.txt"] [:pipe :comma]))))
   (testing "too few delimiters specified, defaults to pipe"
-    (is (= [["comma.txt" ","] ["pipe.txt" "|"]] (zip-opts ["pipe.txt" "comma.txt"] [","]))))
+    (is (= [["comma.txt" :comma] ["pipe.txt" :pipe]] (zip-opts ["pipe.txt" "comma.txt"] [:comma]))))
   (testing "too many delimiters specified are ignored"
-    (is (= [["comma.txt" ","] ["pipe.txt" "|"]] (zip-opts ["pipe.txt" "comma.txt"] [" " "|" ","])))))
+    (is (= [["comma.txt" :comma] ["pipe.txt" :pipe]] (zip-opts ["pipe.txt" "comma.txt"] [:space :pipe :comma])))))
 
 (deftest test-records
   (testing "three files; sort by DOB"
@@ -40,9 +72,9 @@
                     (r/record "James" "Austin" "m" "puce" (jt/local-date 1970 1 5))
                     (r/record "Watson" "Donna" "f" "green" (jt/local-date 1970 1 5))
                     (r/record "Hughes" "Penelope" "f" "puce" (jt/local-date 1970 1 7))]
-          rcds (records [["comma-delimited.txt" ","]
-                         ["pipe-delimited.txt" "|"]
-                         ["space-delimited.txt" " "]] "D")]
+          rcds (records [["comma-delimited.txt" :comma]
+                         ["pipe-delimited.txt" :pipe]
+                         ["space-delimited.txt" :space]] :D)]
       (is (= 8000 (count rcds)))
       (is (= expected (take 5 rcds)))))
   (testing "two files; sort by gender, name"
@@ -51,8 +83,8 @@
                     (r/record "Abraham" "Ella" "f" "puce" (jt/local-date 1987 5 18))
                     (r/record "Abraham" "Donna" "f" "puce" (jt/local-date 1973 10 31))
                     (r/record "Abraham" "Hannah" "f" "red" (jt/local-date 1989 10 2))]
-          rcds (records [["comma-delimited.txt" ","]
-                         ["space-delimited.txt" " "]] "G")]
+          rcds (records [["comma-delimited.txt" :comma]
+                         ["space-delimited.txt" :space]] :G)]
       (is (= 5500 (count rcds)))
       (is (= expected (take 5 rcds))))))
 
@@ -63,7 +95,7 @@
                             "Young Neil m mauve 10/19/1974\n"
                             "Young Karen f periwinkle 11/25/1990\n"])
         actual (with-out-str
-                 (is (= 0 (blarf (take 5 (records [["comma-delimited.txt" ","]["pipe-delimited.txt" "|"]] "N"))))))]
+                 (is (= 0 (blarf (take 5 (records [["comma-delimited.txt" :comma]["pipe-delimited.txt" :pipe]] :N))))))]
     (is (= expected actual))))
 
 (comment

@@ -7,6 +7,14 @@
    [recordity :as r])
   (:gen-class))
 
+(def sorts->comparators {:G (r/comparators :genderThenLastName)
+                         :N (r/comparators :lastNameDesc)
+                         :D (r/comparators :dob)})
+
+(def delims {:pipe (r/delimiters :pipe)
+             :comma (r/delimiters :comma)
+             :space (r/delimiters :space)})
+
 (defn mconj
   "In associate structure `m`, conj `x` onto collection value at key `id`. Used to build up a sequence
   of one or more CLI options. Depends specifically on `nil` being the initial value, so that the
@@ -27,13 +35,15 @@
 (def cli-options
   [["-f" "--file filename" "A file of records. Each record must be newline-delimited."
     :assoc-fn mconj
-    :validate [validate-input-file]]
-   ["-d" "--delim delimiter" "Delimiter character that delimits the fields of each record. Must be one of '|' (pipe), ',' (comma), or space. Any file(s) with unspecified delimiter(s) will default to pipe."
+    :validate [validate-input-file "file does not exist."]]
+   ["-d" "--delim delimiter" "Indicates character that delimits the fields of each record. Use one of 'pipe', 'comma', or 'space' to indicate which one. Any file(s) with unspecified delimiter(s) will default to pipe."
     :assoc-fn mconj
-    :validate [#{"|" "," " "}]]
+    :parse-fn (comp keyword string/lower-case)
+    :validate-fn [(set (keys delims))]]
    ["-s" "--sorting sort-option" "Sort the output in one of three ways: 'G' to sort by gender (females first), then last name ascending; 'D' to sort by DOB ascending; 'N' (default) to sort by last name descending."
-    :default "N"
-    :validate [#{"G" "D" "N"}]]
+    :default :N
+    :parse-fn keyword
+    :validate-fn [(set (keys sorts->comparators))]]
    ["-h" "--help"]])
 
 (defn usage [summary]
@@ -44,7 +54,7 @@
         "Options:"
         summary
         ""
-        "Example: recordity -f records.txt -d | -s N -f more.txt -d , -s D"
+        "Example: recordity -f records.txt -d pipe -f more.txt -d comma -s D"
         ""]
        (string/join \newline)))
 
@@ -89,15 +99,7 @@
   improvement, TODO. (This is what I get for being clever: implementing CLI to allow mismatched
   filename and delim options, which was not required.)"
   [filenames delimiters]
-  (map vector (reverse filenames) (concat (reverse delimiters) (repeat "|"))))
-
-(def sorts->comparators {"G" (r/comparators :genderThenLastName)
-                         "N" (r/comparators :lastNameDesc)
-                         "D" (r/comparators :dob)})
-
-(def delims {"|" (r/delimiters :pipe)
-             "," (r/delimiters :comma)
-             " " (r/delimiters :space)})
+  (map vector (reverse filenames) (concat (reverse delimiters) (repeat :pipe))))
 
 (defn record-seq
   "Sequence of records from a single file and delimiter pair, eagerly loaded entirely into memory."

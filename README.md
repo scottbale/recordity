@@ -10,15 +10,15 @@ CLI
 
 To see CLI usage:
 
-    clojure -M -m cli -h
+    clojure -M:recordity -h
 
 Output the pipe-delimited file of records (with pipe delimiter being the default, and default sorting)
 
-    clojure -M -m cli -f pipe-delimited.txt
+    clojure -M:recordity -f pipe-delimited.txt
 
 Combine multiple files and delimiters, specify sorting
 
-    clojure -M -m cli -f pipe-delimited.txt -d "|" -f space-delimited.txt -d " " -f comma-delimited.txt -d "," -s D
+    clojure -M:recordity -f pipe-delimited.txt -d "|" -f space-delimited.txt -d " " -f comma-delimited.txt -d "," -s D
 
 The three `foo-delimited.txt` files are included as sample resources in the `test-data` directory.
 The CLI will search for each `-f` value first as a file with that name and path, then as a resource.
@@ -28,7 +28,7 @@ REST API
 
 Start up the API in a jetty server instance:
 
-    clojure -M -m restful
+    clojure -M:recordity-server restful
 
 Here are some sample `curl` commands.
 

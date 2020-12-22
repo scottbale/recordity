@@ -129,6 +129,19 @@ Updated README
 Would be nice to add some additional logging to `restful.clj`, perhaps middleware that logs basic
 stats about the session (session id, count of records) for each request.
 
+## 12/22/20
+
+Rejiggered the CLI to use require strings "comma" etc. in place of the actual delimiter symbols.
+Mainly because space was a problem otherwise. Added some unit tests.
+
+Asked in Clojurians slack about how one makes an idiomatic CLI in Clojure these days. Got a variety
+of helpful answers:
+* in deps.edn, add an alias with `:main-opts` (this is what I went with)
+* cli-matic
+* babashka
+* docopt
+* plain old .clj file as a script that can be invoked directly
+
 ## Appendix - links
 
 * compojure

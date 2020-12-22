@@ -7,9 +7,16 @@
         ring/ring-core {:mvn/version "1.8.2"}
         ring/ring-jetty-adapter {:mvn/version"1.8.2"}
         org.apache.logging.log4j/log4j-api {:mvn/version"2.13.3"}
-        org.apache.logging.log4j/log4j-core {:mvn/version "2.13.3"}
-        }
+        org.apache.logging.log4j/log4j-core {:mvn/version "2.13.3"}}
 
 :paths ["src" "resources" "test-data"]
 :extra-paths ["test"]
+
+:aliases
+ {:recordity
+  {:main-opts ["-m" "cli"]
+   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]}
+  :recordity-server
+  {:main-opts ["-m" "restful"]
+   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]}}
 }

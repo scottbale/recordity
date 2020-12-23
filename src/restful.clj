@@ -1,4 +1,5 @@
 (ns restful
+  "REST API server"
   (:require
    [cheshire.core :as json]
    [clojure.tools.logging :as log]
@@ -61,7 +62,8 @@
 
 (defn -main
   [& args]
-  (let [port 3000]
-    (println "Starting Recordity RESTful API jetty server on port" port)
-    (log/info "Starting Recordity RESTful API jetty server on port" port)
+  (let [port 3000
+        msg "Starting Recordity RESTful API jetty server on port"]
+    (println msg port)
+    (log/info msg port)
     (run-jetty (prod-handler) {:port port})))

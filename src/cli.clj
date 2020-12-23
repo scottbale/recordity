@@ -1,4 +1,5 @@
 (ns cli
+  "command-line interface to recordity"
   (:require
    [clojure.java.io :as io]
    [clojure.string :as string]

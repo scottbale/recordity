@@ -106,6 +106,8 @@ Example curl statements:
     curl -sS -X GET -i --header 'Accept: application/json' --header 'Content-Type: application/json' --header 'cookie: recordity=6e144ccf-648f-42d3-ac30-6fafc871c7bc' 'http://localhost:3000/records/gender'
     curl -sS -X POST -i --header 'Content-Type: application/x-www-form-urlencoded' --header 'cookie: recordity=6e144ccf-648f-42d3-ac30-6fafc871c7bc' 'http://localhost:3000/records' -d 'record=Gartner%2CFarnsworth%2Cm%2Cblue%2C1962%2F11%2F22&delimiter=%2C'
 
+(To pretty-print json response, omit the `-i` and pipe to `json_pp`.)
+
 run API with lein:
 
     lein run restful/-main
@@ -141,6 +143,9 @@ of helpful answers:
 * babashka
 * docopt
 * plain old .clj file as a script that can be invoked directly
+
+Switched from `log4j2` only to `slf4j` with `log4j2` binding, allowed me to capture (and quiet down)
+jetty logging.
 
 ## Appendix - links
 

@@ -11,10 +11,10 @@
                  [ring/ring-core "1.8.2"]
                  ;; [ring/ring-defaults "0.3.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
-                 [org.apache.logging.log4j/log4j-api "2.13.3"]
                  [org.apache.logging.log4j/log4j-core "2.13.3"]
-                 ]
-  :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.13.3"]]
+  :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]
+
   :profiles {:dev {:resource-paths ["test-data"]
                    :dependencies [[ring/ring-mock "0.4.0"]]}}
   :main cli

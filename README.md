@@ -26,6 +26,12 @@ The CLI will search for each `-f` value first as a file with that name and path,
 REST API
 --------
 
+Implemented using [Ring](https://github.com/ring-clojure/ring) and
+[Compojure](https://github.com/weavejester/compojure). State is held in rudimentary sessions using
+Ring's [session middleware](https://github.com/ring-clojure/ring/wiki/Sessions) and in-memory
+session store, which is why a session identifier cookie is included in some of my sample `curl`
+statements below.
+
 Start up the API in a jetty server instance:
 
     clojure -M:recordity-server restful

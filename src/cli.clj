@@ -22,7 +22,7 @@
   resulting sequence is a list with the user's final option at the head (as `conj`ing on a list
   prepends additional values to the head of the list.) See also `zip-opts`."
   [m id x]
-  (update m id conj x))
+  (update m id (fnil conj []) x))
 
 (defn validate-input-file
   "Validate function for file CLI option: String param `f` must be an existing resource or

@@ -51,6 +51,13 @@ Now see a non-empty response
 
     curl -sS -X GET -i --header 'cookie: recordity=08130f6d-7b9c-4b0e-ad76-65eaf50314f6' --header 'Accept: application/json' --header 'Content-Type: application/json' 'http://localhost:3000/records/birthdate'
 
+tests
+-----
+
+Run unit tests (uses [Cognitect Labs test runner](https://github.com/cognitect-labs/test-runner).)
+
+    clj -X:test
+
 log
 ---
 

@@ -18,5 +18,12 @@
    :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}
   :recordity-server
   {:main-opts ["-m" "restful"]
-   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}}
+   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}
+  :test
+  {:extra-paths ["test"]
+   :extra-deps {ring/ring-mock {:mvn/version "0.4.0"}
+                io.github.cognitect-labs/test-runner
+                {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                 :sha "9e35c979860c75555adaff7600070c60004a0f44"}}
+   :exec-fn cognitect.test-runner.api/test}}
 }

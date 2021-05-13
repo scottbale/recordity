@@ -147,6 +147,58 @@ of helpful answers:
 Switched from `log4j2` only to `slf4j` with `log4j2` binding, allowed me to capture (and quiet down)
 jetty logging.
 
+## 5/13/21
+
+Unit tests using [Cognitect Labs test runner](https://github.com/cognitect-labs/test-runner).
+
+Took me a couple tries to get it right:
+
+    $ clj -X:test
+    Cloning: https://github.com/cognitect-labs/test-runner.git
+    Checking out: https://github.com/cognitect-labs/test-runner.git at 9e35c979860c75555adaff7600070c60004a0f44
+    Downloading: org/clojure/tools.namespace/1.1.0/tools.namespace-1.1.0.pom from central
+    Downloading: org/clojure/java.classpath/1.0.0/java.classpath-1.0.0.pom from central
+    Downloading: org/clojure/tools.reader/1.3.4/tools.reader-1.3.4.pom from central
+    Downloading: org/clojure/java.classpath/1.0.0/java.classpath-1.0.0.jar from central
+    Downloading: org/clojure/tools.namespace/1.1.0/tools.namespace-1.1.0.jar from central
+    Downloading: org/clojure/tools.reader/1.3.4/tools.reader-1.3.4.jar from central
+
+    Running tests in #{"test"}
+    Execution error (FileNotFoundException) at cognitect.test-runner/test (test_runner.clj:89).
+    Could not locate cli_test__init.class, cli_test.clj or cli_test.cljc on classpath. Please check that namespaces with dashes use underscores in the Clojure file name.
+
+I hadn't added `test` as an `:extra-paths` (because I already had that defined at top level in
+`deps.edn` map, was assuming it would be picked up from there).
+
+    $ clj -X:test
+
+    Running tests in #{"test"}
+    Syntax error (FileNotFoundException) compiling at (restful_test.clj:1:1).
+    Could not locate ring/mock/request__init.class, ring/mock/request.clj or ring/mock/request.cljc on classpath.
+
+I had never added `ring/ring-mock` to `deps.edn` (because I previously only ran unit tests using
+lein). Added to `:extra-deps`.
+
+    $ clj -X:test
+    Error building classpath. Bad coordinate for library ring/ring-mock, expected map: "0.4.0"
+    $ clj -X:test
+    Error building classpath. No :mvn/version specified for ring/ring-mock
+    $ clj -X:test
+
+    Running tests in #{"test"}
+
+    Testing cli-test
+
+    Testing recordity-test
+
+    Testing restful-test
+
+    Ran 17 tests containing 45 assertions.
+    0 failures, 0 errors.
+
+Took me a couple tries to properly configure the new dependency.
+
+
 ## Appendix - links
 
 * compojure
@@ -160,3 +212,4 @@ jetty logging.
 * ring-mock https://github.com/ring-clojure/ring-mock
 * ring-defaults https://github.com/ring-clojure/ring-defaults
 * cheshire https://github.com/dakrone/cheshire
+* test runner https://github.com/cognitect-labs/test-runner

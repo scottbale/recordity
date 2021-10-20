@@ -103,6 +103,8 @@
   [{:keys [pegs] :as board}]
   (count (filter true? (seq pegs))))
 
+(def game-score (comp score last :boards))
+
 (defn choose-move
   "Given a board and a sequence of moves, returns a move"
   [board moves]
@@ -150,7 +152,9 @@
   (debug-game (play-game (new-game (sample-board))))
 
   ;; multiple games - sort games by final score
-  (doseq [g (sort-by (comp score last :boards) (repeatedly 12 (comp play-game new-game sample-board)))]
+  (doseq [g (->> (repeatedly 12 (comp play-game new-game sample-board))
+                 (filter (comp (partial >= 3) game-score))
+                 (sort-by game-score))]
     (println ">>>>>>>>")
     (print-game g))
 

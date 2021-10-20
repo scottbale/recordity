@@ -106,7 +106,9 @@
 (defn choose-move
   "Given a board and a sequence of moves, returns a move"
   [board moves]
-  (first moves))
+  ;;(first moves)
+  (nth moves (rand-int (count moves)))
+  )
 
 (defn play-game [game]
   (let [board (first (:boards game))]

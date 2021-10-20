@@ -140,9 +140,20 @@
     (print-board final-board)
     (println "\nscore:" (score final-board))))
 
+(defn print-game [{:keys [boards] :as game}]
+  (let [final-board (last boards)]
+    (print-board final-board)
+    (println "\nscore:" (score final-board))))
+
 (comment
   (refresh)
   (debug-game (play-game (new-game (sample-board))))
+
+  ;; multiple games - sort games by final score
+  (doseq [g (sort-by (comp score last :boards) (repeatedly 12 (comp play-game new-game sample-board)))]
+    (println ">>>>>>>>")
+    (print-game g))
+
   (moves (sample-board))
   (move? (sample-board) [5 2 0])
   (move? (sample-board) [3 1 0])

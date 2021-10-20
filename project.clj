@@ -16,7 +16,8 @@
   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]
 
   :profiles {:dev {:resource-paths ["test-data"]
-                   :dependencies [[ring/ring-mock "0.4.0"]]}}
+                   :dependencies [[org.clojure/tools.namespace "1.1.0"]
+                                  [ring/ring-mock "0.4.0"]]}}
   :main cli
 
   ;;:plugins [[lein-ring "0.12.5"]]

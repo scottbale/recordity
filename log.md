@@ -147,6 +147,25 @@ of helpful answers:
 Switched from `log4j2` only to `slf4j` with `log4j2` binding, allowed me to capture (and quiet down)
 jetty logging.
 
+
+## 10/20/21
+
+Peg board game
+
+Current implementation:
+
+* a board is a map containing a native boolean array: `{:pegs (boolean-array ... size 15)}`
+* a move is a map containing three integers representing the source peg, the peg being "jumped" over
+  and the empty target spot: `{:indices [1 2 3]}`
+* Currently no implementation of a game yet but I expect it will be a history of each board and each
+  move between boards.
+
+Thoughts on optimizing implementation (for when there are a lot of copies in memory)
+
+* A move could be, instead of a map, just the vector of three longs. Knowing the max index is 14,
+  this could be further optimized as a bitmask or something.
+* A board could be just the native boolean array.
+
 ## Appendix - links
 
 * compojure

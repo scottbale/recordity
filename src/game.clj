@@ -2,30 +2,35 @@
   "peg game
 
   Board looks like this:
-        x
-      x   x 
-    x   x   x
-  x   x   x   x
-x   x   x   x   x
+          x
+        x   x 
+      x   x   x
+    x   x   x   x
+  x   x   x   x   x
 
-Represent board by arrangement of indices of boolean array of length 15:
+  Represent board by arrangement of indices of boolean array of length 15:
 
-        0
-      1   2
-    3   4   5
-  6   7   8   9
-10  11  12  13  14
+              z |
+                V
+
+                0
+              1   2
+            3   4   5
+          6   7   8   9
+        10  11  12  13  14
+  x ->                     <- y
 
   Goal is to get down to one peg.
   "
   (:require
-   [debugger :refer [dbg]]))
+   [debugger :refer [dbg]]
+   [clojure.tools.namespace.repl :refer [refresh refresh-all]])
+  (:import
+   [java.util Arrays]))
 
-(defn sample-game []
+(defn sample-board []
   {:pegs (boolean-array (map pos? (range 0 15)))})
 
-;; (def xs [[10] [6 11] [3 7 12] [1 4 8 13] [0 2 5 9 14]])
-;; (def ys [[14] [9 13] [5 8 12] [2 4 7 11] [0 1 3 6 10]])
 (def zs [[0] [1 2] [3 4 5] [6 7 8 9] [10 11 12 13 14]])
 
 (def axes
@@ -40,8 +45,10 @@ Represent board by arrangement of indices of boolean array of length 15:
    ])
 
 
-(defn perform-move [game move]
-  (let [pegs-copy (java.util.Arrays/copyOf (:pegs game) 15)
+(defn perform-move
+  "Given a board and a move, return a new board representing the move applied to the given board"
+  [board move]
+  (let [pegs-copy (Arrays/copyOf (:pegs board) 15)
         [i j k] (:indices move)]
     (aset-boolean pegs-copy i false)
     (aset-boolean pegs-copy j false)
@@ -49,7 +56,7 @@ Represent board by arrangement of indices of boolean array of length 15:
     {:pegs pegs-copy}))
 
 (defn move?
-  "Given game and indices of three adjacent spots, is it a legal move?" 
+  "Given board and indices of three adjacent spots, is it a legal move?" 
   [{:keys [pegs]} [i j k]]
   (and 
    (true? (aget pegs i))
@@ -57,8 +64,9 @@ Represent board by arrangement of indices of boolean array of length 15:
    (false? (aget pegs k))))
 
 (defn moves-along-indices
-  "Given three to five indices representing adjacent spots on the board, calculate legal moves"
-  [game indices]
+  "Given a board and three to five indices representing adjacent spots on the board, calculate legal
+  moves"
+  [board indices]
   (loop [examine indices
          moves []]
     (let [ijk (take 3 examine)]
@@ -66,15 +74,18 @@ Represent board by arrangement of indices of boolean array of length 15:
         moves
         (recur 
          (rest examine)
-         (if (move? game ijk)
+         (if (move? board ijk)
            (conj moves {:indices ijk})
            moves))))))
 
-(defn moves [game]
-  (mapcat (partial moves-along-indices game) axes))
+(defn moves
+  "Given a board, return a sequence of all (zero or more) legal moves."
+  [board]
+  (mapcat (partial moves-along-indices board) axes))
 
-(defn print-game [game]
-  (let [pegs (:pegs game)]
+(defn print-board [board]
+  (let [pegs (:pegs board)]
+    (print "\n")
     (doseq [[indices pad] (map vector zs [8 6 4 2 0])]
       (dotimes [_ pad] (print " "))
       (doseq [i indices]
@@ -82,44 +93,48 @@ Represent board by arrangement of indices of boolean array of length 15:
           (print "x   ")
           (print ".   ")))
       (print "\n")))
-  game)
+  board)
 
 (defn score
   "Number of pegs left. Less is better."
-  [{:keys [pegs] :as game}]
+  [{:keys [pegs] :as board}]
   (count (filter true? (seq pegs))))
 
-(defn choose-move [game moves]
+(defn choose-move
+  "Given a board and a sequence of moves, returns a move"
+  [board moves]
   (first moves))
 
-(defn play-game [game]
-  (loop [g game
+(defn play-game [board]
+  (loop [b board
          safety-valve 15]
-    (let [mooves (moves g)]
-      ;; (print-game g)
+    (let [mooves (moves b)]
+      ;; (print-board b)
       ;; (println (count mooves) "moves, " safety-valve "tries left")
       (if (or (zero? safety-valve) (empty? mooves))
-        g
-        (recur (perform-move g (choose-move g mooves))
+        b
+        (recur (perform-move b (choose-move b mooves))
                (dec safety-valve))))))
 
-(defn debug-game [game]
-  (print-game game)
-  (println "score: " (score game)))
+(defn debug-game [board]
+  (print-board board)
+  (println "score: " (score board)))
 
 (comment
-  (debug-game (play-game (sample-game)))
-  (moves (sample-game))
-  (move? (sample-game) [5 2 0])
-  (move? (sample-game) [3 1 0])
-  (move? (sample-game) [9 5 2])
-  (moves-along-indices (sample-game) [14 9 5 2 0])
-  (moves-along-indices (sample-game) [9 5 2])
-  (print-game (sample-game))
-  (print-game (perform-move (sample-game) {:indices [5 2 0]}))
-  (moves (perform-move (sample-game) {:indices [5 2 0]}))
+  (refresh)
+  (debug-game (play-game (sample-board)))
+  (moves (sample-board))
+  (move? (sample-board) [5 2 0])
+  (move? (sample-board) [3 1 0])
+  (move? (sample-board) [9 5 2])
+  (moves-along-indices (sample-board) [14 9 5 2 0])
+  (moves-along-indices (sample-board) [9 5 2])
+  (print-board (sample-board))
+  (print-board (perform-move (sample-board) {:indices [5 2 0]}))
+  (moves (perform-move (sample-board) {:indices [5 2 0]}))
 
-  (java.util.Arrays/copyOf (boolean-array (map pos? (range 0 15))) 15)
+  (Arrays/copyOf (boolean-array (map pos? (range 0 15))) 15)
   aset-boolean
   interleave
+  and
   )

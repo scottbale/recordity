@@ -157,8 +157,8 @@ Current implementation:
 * a board is a map containing a native boolean array: `{:pegs (boolean-array ... size 15)}`
 * a move is a map containing three integers representing the source peg, the peg being "jumped" over
   and the empty target spot: `{:indices [1 2 3]}`
-* Currently no implementation of a game yet but I expect it will be a history of each board and each
-  move between boards.
+* A game is a map containing keys `:boards` and `:moves`, respectively a vector of board and move
+  history
 
 Thoughts on optimizing implementation (for when there are a lot of copies in memory)
 

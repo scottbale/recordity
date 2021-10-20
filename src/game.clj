@@ -31,6 +31,9 @@
 (defn sample-board []
   {:pegs (boolean-array (map pos? (range 0 15)))})
 
+(defn new-game [first-board]
+  {:boards [first-board] :moves []})
+
 (def zs [[0] [1 2] [3 4 5] [6 7 8 9] [10 11 12 13 14]])
 
 (def axes
@@ -105,24 +108,39 @@
   [board moves]
   (first moves))
 
-(defn play-game [board]
-  (loop [b board
-         safety-valve 15]
-    (let [mooves (moves b)]
-      ;; (print-board b)
-      ;; (println (count mooves) "moves, " safety-valve "tries left")
-      (if (or (zero? safety-valve) (empty? mooves))
-        b
-        (recur (perform-move b (choose-move b mooves))
-               (dec safety-valve))))))
+(defn play-game [game]
+  (let [board (first (:boards game))]
+    (loop [g game
+           b board
+           safety-valve 15]
+      (let [mooves (moves b)]
+        ;; (print-board b)
+        ;; (println (count mooves) "moves, " safety-valve "tries left")
+        (if (or (zero? safety-valve) (empty? mooves))
+          g
+          (let [m (choose-move b mooves)
+                b' (perform-move b m)
+                bs (:boards g)
+                ms (:moves g)]
+            (recur {:boards (conj bs b') :moves (conj ms m)}
+                   b'
+                   (dec safety-valve))))))))
 
-(defn debug-game [board]
-  (print-board board)
-  (println "score: " (score board)))
+(defn print-move [move]
+  (let [[i j k] (:indices move)]
+    (println "\nmove:" i j k)))
+
+(defn debug-game [{:keys [boards moves] :as game}]
+  (doseq [[b m] (map vector boards moves)]
+    (print-board b)
+    (print-move m))
+  (let [final-board (last boards)]
+    (print-board final-board)
+    (println "\nscore:" (score final-board))))
 
 (comment
   (refresh)
-  (debug-game (play-game (sample-board)))
+  (debug-game (play-game (new-game (sample-board))))
   (moves (sample-board))
   (move? (sample-board) [5 2 0])
   (move? (sample-board) [3 1 0])

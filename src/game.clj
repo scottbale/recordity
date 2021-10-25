@@ -8,7 +8,8 @@
     x   x   x   x
   x   x   x   x   x
 
-  Represent board by arrangement of indices of boolean array of length 15:
+  Represent board by boolean array of length 15. Board can be visualized by arranging indices like
+  so:
 
               z |
                 V
@@ -20,7 +21,10 @@
         10  11  12  13  14
   x ->                     <- y
 
-  Goal is to get down to one peg.
+  True/false represents whether a peg is in that slot or not. A valid move is for a peg to jump over
+  another peg into an empty slot, and the jumped-over peg is removed from the board. Repeat until no
+  more moves are possible. Score is number of remaining pegs. Goal is lowest score. Lowest possible
+  score is 1.
   "
   (:require
    [debugger :refer [dbg]]
@@ -37,8 +41,9 @@
 (def zs [[0] [1 2] [3 4 5] [6 7 8 9] [10 11 12 13 14]])
 
 (def axes
-  ;; vector of vector - each contained vector is a vector of three-to-five indices representing a
-  ;; row of contiguous spaces on the board that must be searched for legal moves
+  ;; vector of vectors - each contained vector is three-to-five indices representing a row of at
+  ;; least three contiguous spaces on the board that must be searched for possible moves. Refer to
+  ;; diagram above.
   [[3 7 12] [1 4 8 13] [0 2 5 9 14]   ;; xs
    [12 7 3] [13 8 4 1] [14 9 5 2 0]   ;; xs reversed
    [5 8 12] [2 4 7 11] [0 1 3 6 10]   ;; ys
@@ -46,7 +51,6 @@
    [3 4 5] [6 7 8 9] [10 11 12 13 14] ;; zs
    [5 4 3] [9 8 7 6] [14 13 12 11 10] ;; zs reversed
    ])
-
 
 (defn perform-move
   "Given a board and a move, return a new board representing the move applied to the given board"
@@ -112,23 +116,25 @@
   (nth moves (rand-int (count moves)))
   )
 
+(defn advance-game
+  "Apply the move to the current board of the game, returning a new game."
+  [{:keys [boards moves] :as game} move]
+  (let [b (last boards)]
+    {:boards (conj boards (perform-move b move))
+     :moves (conj moves move)}))
+
 (defn play-game [game]
-  (let [board (first (:boards game))]
-    (loop [g game
-           b board
-           safety-valve 15]
-      (let [mooves (moves b)]
-        ;; (print-board b)
-        ;; (println (count mooves) "moves, " safety-valve "tries left")
-        (if (or (zero? safety-valve) (empty? mooves))
-          g
-          (let [m (choose-move b mooves)
-                b' (perform-move b m)
-                bs (:boards g)
-                ms (:moves g)]
-            (recur {:boards (conj bs b') :moves (conj ms m)}
-                   b'
-                   (dec safety-valve))))))))
+  (loop [g game
+         safety-valve 15]
+    (let [b (last (:boards g))
+          mooves (moves b)]
+      ;; (print-board b)
+      ;; (println (count mooves) "moves, " safety-valve "tries left")
+      (if (or (zero? safety-valve) (empty? mooves))
+        g
+        (let [m (choose-move b mooves)]
+          (recur (advance-game g m)
+                 (dec safety-valve)))))))
 
 (defn print-move [move]
   (let [[i j k] (:indices move)]
@@ -147,16 +153,71 @@
     (print-board final-board)
     (println "\nscore:" (score final-board))))
 
+#_(defn gather-games
+  "Sort (low to high score) and filter games (keeping up to max-score)"
+  [max-score games]
+  (->> games
+       (filter (comp (partial >= max-score) game-score))
+       (sort-by game-score)))
+
+(defn game-stack
+  "Given a game, return an initial game stack, which is a sequence of size two. The first item is a
+  sequence of the remaining possible moves. The second item is the game."
+  [{:keys [boards] :as game}]
+  (list (-> boards first moves) game))
+
+(defn unit-of-work
+  "Take game stack, do one move, return new game stack."
+  [[moves game & substack :as game-stack]]
+  (if-let [m (first moves)]
+    (conj substack (advance-game game m) (rest moves))
+    substack))
+
+#_(defn play-games
+  "Return a lazy sequence of completed games, starting with an initial board"
+  [board]
+  (let [game (new-game board)]
+    reduce
+    transduce
+    (lazy-seq)))
+
 (comment
   (refresh)
+
+
+
   (debug-game (play-game (new-game (sample-board))))
 
+
+  (concat 
+   (game-stack (new-game (sample-board)))
+   (game-stack (new-game (sample-board))))
+
+  #_(({:indices (5 2 0)} {:indices (3 1 0)}) 
+     {:boards [{:pegs #object["[Z" 0x53b1e3b1 "[Z@53b1e3b1"]}], :moves []} 
+     ({:indices (5 2 0)} {:indices (3 1 0)}) 
+     {:boards [{:pegs #object["[Z" 0x17ef4ffe "[Z@17ef4ffe"]}], :moves []})
+
+  (-> (concat 
+       (game-stack (new-game (sample-board)))
+       (game-stack (new-game (sample-board))))
+      unit-of-work)
+
+  #_(({:indices (3 1 0)}) 
+     {:boards [{:pegs #object["[Z" 0x2ad08890 "[Z@2ad08890"]} 
+               {:pegs #object["[Z" 0x1a51aad0 "[Z@1a51aad0"]}], 
+      :moves [{:indices (5 2 0)}]} 
+     ({:indices (5 2 0)} {:indices (3 1 0)}) 
+     {:boards [{:pegs #object["[Z" 0x1d62b6f9 "[Z@1d62b6f9"]}], 
+      :moves []})
+
+
   ;; multiple games - sort games by final score
-  (doseq [g (->> (repeatedly 12 (comp play-game new-game sample-board))
-                 (filter (comp (partial >= 3) game-score))
-                 (sort-by game-score))]
-    (println ">>>>>>>>")
-    (print-game g))
+  #_(doseq [g (->> (comp play-game new-game sample-board)
+                   (repeatedly 12)
+                   (gather-games 3))]
+      (println ">>>>>>>>")
+      (print-game g))
 
   (moves (sample-board))
   (move? (sample-board) [5 2 0])
@@ -168,8 +229,24 @@
   (print-board (perform-move (sample-board) {:indices [5 2 0]}))
   (moves (perform-move (sample-board) {:indices [5 2 0]}))
 
+
+
+  ;; testing laziness with filtering, sorting
+  ;; Conclusion: have to take before sort!
+  (let [s (concat (range 5) (lazy-seq (println "kaboom") [5]))]
+    (->> s
+         (filter even?)
+         (take 3)
+         (sort >)
+         ;; (take 3)
+         ))
+
+  #_(let [foo []]
+      (if-let [m (first foo)]
+        m
+        :nope))
+
   (Arrays/copyOf (boolean-array (map pos? (range 0 15))) 15)
   aset-boolean
   interleave
-  and
-  )
+  and)

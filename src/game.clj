@@ -90,6 +90,8 @@
   [board]
   (mapcat (partial moves-along-indices board) axes))
 
+(def game-moves (comp moves last :boards))
+
 (defn print-board [board]
   (let [pegs (:pegs board)]
     (print "\n")
@@ -167,15 +169,19 @@
   (list (-> boards first moves) game))
 
 (defn unit-of-work
-  "Take game stack, do one move, return new game stack.
-   Number of remaining moves, three cases:
-    * zero - return substack
-    * one - apply move to game, calculate new moves, append both to substack
-    * more than one - apply move to game, calculate new moves, append both to stack param (minus applied move)"
+  "Take game stack, do one move (?), return new game stack.
+  If there is a move 'm', make a new stack frame composed of game' (advancing current game) and
+  moves' (calculate moves for game').
+  TODO how to handle if there isn't a move"
   [[moves game & substack :as game-stack]]
-  (if-let [m (first moves)]
-    (conj substack (advance-game game m) (rest moves))
-    substack))
+  (let [[m & ms] moves]
+    (if m
+      (let [game' (advance-game game m)
+            moves' (game-moves game')]
+        (if (seq ms)
+          (conj substack game ms game' moves')
+          (conj substack game' moves')))
+      substack)))
 
 (defn work-to-completion
   "Take game stack, return game stack where top game is completed."
@@ -213,7 +219,6 @@
 
   (debug-game (play-game (new-game (sample-board))))
 
-
   (concat 
    (game-stack (new-game (sample-board)))
    (game-stack (new-game (sample-board))))
@@ -228,12 +233,15 @@
        (game-stack (new-game (sample-board))))
       unit-of-work)
 
-  #_(({:indices (3 1 0)}) 
-     {:boards [{:pegs #object["[Z" 0x2ad08890 "[Z@2ad08890"]} 
-               {:pegs #object["[Z" 0x1a51aad0 "[Z@1a51aad0"]}], 
+  #_(({:indices (14 9 5)} {:indices (12 8 5)} {:indices (7 4 2)} {:indices (3 4 5)}) 
+     {:boards [{:pegs #object["[Z" 0x4590b0dd "[Z@4590b0dd"]} 
+               {:pegs #object["[Z" 0x563d036a "[Z@563d036a"]}], 
       :moves [{:indices (5 2 0)}]} 
+     ({:indices (3 1 0)}) 
+     {:boards [{:pegs #object["[Z" 0x4590b0dd "[Z@4590b0dd"]}], 
+      :moves []} 
      ({:indices (5 2 0)} {:indices (3 1 0)}) 
-     {:boards [{:pegs #object["[Z" 0x1d62b6f9 "[Z@1d62b6f9"]}], 
+     {:boards [{:pegs #object["[Z" 0x7058e926 "[Z@7058e926"]}], 
       :moves []})
 
 

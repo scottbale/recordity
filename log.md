@@ -166,6 +166,18 @@ Thoughts on optimizing implementation (for when there are a lot of copies in mem
   this could be further optimized as a bitmask or something.
 * A board could be just the native boolean array.
 
+
+## 10/24/21
+
+I just realized a question about my game stack concept: how do I know when the top of the stack
+contains an empty list of moves because a complete game has been reached, versus the moves have all
+just been tried? I was planning on using the stack top to return a completed game.
+
+
+## 10/25/21
+
+Answer: don't add an incomplete game back to the stack once all the moves have been checked.
+
 ## Appendix - links
 
 * compojure

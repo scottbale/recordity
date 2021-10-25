@@ -167,24 +167,49 @@
   (list (-> boards first moves) game))
 
 (defn unit-of-work
-  "Take game stack, do one move, return new game stack."
+  "Take game stack, do one move, return new game stack.
+   Number of remaining moves, three cases:
+    * zero - return substack
+    * one - apply move to game, calculate new moves, append both to substack
+    * more than one - apply move to game, calculate new moves, append both to stack param (minus applied move)"
   [[moves game & substack :as game-stack]]
   (if-let [m (first moves)]
     (conj substack (advance-game game m) (rest moves))
     substack))
 
-#_(defn play-games
+(defn work-to-completion
+  "Take game stack, return game stack where top game is completed."
+  [[moves game & substack :as game-stack]]
+  (if (seq moves)
+    (recur )))
+
+(defn play-games
   "Return a lazy sequence of completed games, starting with an initial board"
   [board]
-  (let [game (new-game board)]
-    reduce
-    transduce
-    (lazy-seq)))
+  (let [game (new-game board)
+        game-stack (game-stack game)]
+    (letfn [(complete-seq [stack]
+              (let [[_ g & rem] (work-to-completion stack)]
+                (if (seq rem)
+                  (concat (list g) (lazy-seq complete-seq rem))
+                  (list g))))]
+      (complete-seq game-stack))))
+
+(defn test-lazyness [n]
+  (letfn [(lazy-inc-range [i]
+            (if (= (+ 5 n) i)
+              (do 
+                (print "blammo" i)
+                (list i))
+              (concat (list i) (lazy-seq (lazy-inc-range (inc i)))))
+            )]
+    (lazy-inc-range n)))
+
 
 (comment
   (refresh)
 
-
+  (take 3 (test-lazyness 12))
 
   (debug-game (play-game (new-game (sample-board))))
 

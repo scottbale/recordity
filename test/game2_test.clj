@@ -8,14 +8,14 @@
 (deftest test-board-equals
   (let [b (sample-board)
         same-b (sample-board)
-        different-b (board [1 2])]
+        different-b (build-board [1 2])]
     (is (= b b))
     (is (= b same-b))
     (is (not (= b different-b)))))
 
 (deftest test-board
   (let [b (sample-board)
-        b2 (board [1 3 5])]
+        b2 (build-board [1 3 5])]
     (is (= (range 1 15) (pegs b)))
     (is (= [1 3 5] (pegs b2)))))
 
@@ -28,7 +28,9 @@
     (is (= expected (board-str (sample-board))))))
 
 (deftest test-move
-  (let [b (board [0 1 2 3])
-        expected (board [0 2 6])
+  (let [b (build-board [0 1 2 3])
+        expected (build-board [0 2 6])
         m (move [1 3 6])]
     (is (= expected (apply-move b m)))))
+
+;;(deftest test-all-moves)

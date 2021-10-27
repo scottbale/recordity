@@ -50,11 +50,11 @@
                (interpose "   " (map pegstr indices))))]
       (str/join (apply concat (interpose "\n" (map rowstrs (map vector zs [8 6 4 2 0]))))))))
 
-(defn board [pegs]
+(defn build-board [pegs]
   (reduce (comp short bit-set) empty-board pegs))
 
 (defn sample-board []
-  (board (range 1 15)))
+  (build-board (range 1 15)))
 
 (defn pegs [board]
   (filter (partial bit-test board) (range 15)))

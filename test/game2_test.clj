@@ -33,4 +33,19 @@
         m (move [1 3 6])]
     (is (= expected (apply-move b m)))))
 
-;;(deftest test-all-moves)
+(deftest test-move?
+  (let [b (build-board [3 5 6 7])]
+    (is (move? b 3 6 10))
+    (is (move? b 6 3 1))
+    (is (move? b 3 7 12))
+    (is (move? b 6 7 8))
+    (is (not (move? b 10 6 3)))
+    (is (not (move? b 2 5 9)))
+    (is (not (move? b 12 13 14)))))
+
+(deftest test-all-moves
+  (let [b-one-move (build-board [0 1])
+        b-no-moves (build-board [0 7 13])
+        one-move (list (move [0 1 3]))]
+    (is (= one-move (moves b-one-move)))
+    (is (empty? (moves b-no-moves)))))

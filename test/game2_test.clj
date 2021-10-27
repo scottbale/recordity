@@ -2,13 +2,16 @@
   (:require
    [clojure.test :refer :all]
    [debugger :refer (dbg)]
-   [game2 :refer :all]))
+   [game2 :refer :all]
+   [clojure.tools.namespace.repl :refer [refresh]]))
 
 (deftest test-board-equals
-  (let [board (sample-board)
-        same-board (sample-board)]
-    (is (= board board))
-    (is (= board same-board))))
+  (let [b (sample-board)
+        same-b (sample-board)
+        different-b (board [1 2])]
+    (is (= b b))
+    (is (= b same-b))
+    (is (not (= b different-b)))))
 
 (deftest test-board
   (let [b (sample-board)
@@ -23,3 +26,9 @@
                        "  x   x   x   x\n"
                        "x   x   x   x   x")]
     (is (= expected (board-str (sample-board))))))
+
+(deftest test-move
+  (let [b (board [0 1 2 3])
+        expected (board [0 2 6])
+        m (move [1 3 6])]
+    (is (= expected (apply-move b m)))))

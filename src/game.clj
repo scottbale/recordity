@@ -186,8 +186,9 @@
 (defn work-to-completion
   "Take game stack, return game stack where top game is completed."
   [[moves game & substack :as game-stack]]
-  (if (seq moves)
-    (recur )))
+  #_(if (seq moves)
+    (recur ))
+  )
 
 (defn play-games
   "Return a lazy sequence of completed games, starting with an initial board"
@@ -223,26 +224,12 @@
    (game-stack (new-game (sample-board)))
    (game-stack (new-game (sample-board))))
 
-  #_(({:indices (5 2 0)} {:indices (3 1 0)}) 
-     {:boards [{:pegs #object["[Z" 0x53b1e3b1 "[Z@53b1e3b1"]}], :moves []} 
-     ({:indices (5 2 0)} {:indices (3 1 0)}) 
-     {:boards [{:pegs #object["[Z" 0x17ef4ffe "[Z@17ef4ffe"]}], :moves []})
 
   (-> (concat 
        (game-stack (new-game (sample-board)))
        (game-stack (new-game (sample-board))))
       unit-of-work)
 
-  #_(({:indices (14 9 5)} {:indices (12 8 5)} {:indices (7 4 2)} {:indices (3 4 5)}) 
-     {:boards [{:pegs #object["[Z" 0x4590b0dd "[Z@4590b0dd"]} 
-               {:pegs #object["[Z" 0x563d036a "[Z@563d036a"]}], 
-      :moves [{:indices (5 2 0)}]} 
-     ({:indices (3 1 0)}) 
-     {:boards [{:pegs #object["[Z" 0x4590b0dd "[Z@4590b0dd"]}], 
-      :moves []} 
-     ({:indices (5 2 0)} {:indices (3 1 0)}) 
-     {:boards [{:pegs #object["[Z" 0x7058e926 "[Z@7058e926"]}], 
-      :moves []})
 
 
   ;; multiple games - sort games by final score

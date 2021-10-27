@@ -71,7 +71,7 @@
 (defn pegs [board]
   (filter (partial bit-test board) (range 15)))
 
-(defn move [[moving-peg jumped-peg target-peg :as pegs]]
+(defn build-move [[moving-peg jumped-peg target-peg :as pegs]]
   ;; return a pair of shorts
   (list
    (short (bit-set empty-board target-peg))
@@ -106,7 +106,7 @@
         (recur
          (rest examine)
          (if (apply move? board ijk)
-           (conj moves (move ijk))
+           (conj moves (build-move ijk))
            moves))))))
 
 (defn moves

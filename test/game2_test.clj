@@ -30,7 +30,7 @@
 (deftest test-move
   (let [b (build-board [0 1 2 3])
         expected (build-board [0 2 6])
-        m (move [1 3 6])]
+        m (build-move [1 3 6])]
     (is (= expected (apply-move b m)))))
 
 (deftest test-move?
@@ -46,6 +46,6 @@
 (deftest test-all-moves
   (let [b-one-move (build-board [0 1])
         b-no-moves (build-board [0 7 13])
-        one-move (list (move [0 1 3]))]
+        one-move (list (build-move [0 1 3]))]
     (is (= one-move (moves b-one-move)))
     (is (empty? (moves b-no-moves)))))

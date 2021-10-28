@@ -85,8 +85,9 @@
 (deftest test-new-game-stack
   (let [b (sample-board)
         g (new-game b)
-        ms (moves b)]
-    (is (= [ms g] (new-game-stack g)))))
+        ms (moves b)
+        expected (map vector (repeatedly (constantly g)) ms)]
+    (is (= expected (new-game-stack g)))))
 
 (deftest test-build-game-stack
   (let [b1 (sample-board)
@@ -96,8 +97,11 @@
         moves2 (moves b2)
         g2 (build-game [b1 b2] [m1])
         gs1 (build-game-stack g1 moves1)
-        gs2 (build-game-stack gs1 g2 moves2)]
-    (is (= (list moves2 g2 moves1 g1) gs2))))
+        gs2 (build-game-stack gs1 g2 moves2)
+        expected (concat
+                  (map vector (repeatedly (constantly g2)) moves2)
+                  (map vector (repeatedly (constantly g1)) moves1))]
+    (is (= expected gs2))))
 
 (deftest test-unit-of-work
   (let [b1 (sample-board)

@@ -171,26 +171,24 @@
      (conj moves move))))
 
 (defn build-game-stack
+  "A game stack is a sequence of pairs. Each pair is a game in-progress and a move to be attempted. So
+  the same game may be duplicated in the stack, paired with different moves."
   ([game next-moves]
-   (list next-moves game))
+   (map vector (repeatedly (constantly game)) next-moves))
   ([game-stack game next-moves]
    (concat (build-game-stack game next-moves) game-stack)))
 
 (defn new-game-stack
-  "Given a game, return an initial game stack, which is a sequence of size two. The first item is a
-  sequence of the remaining possible moves. The second item is the game."
+  "Given a game, return an initial game stack"
   [{:keys [boards] :as game}]
   (build-game-stack game (-> boards first moves)))
 
 (defn unit-of-work
   "Given a game stack, perform a unit of work and return a new game stack."
-  [[moves game & substack :as game-stack]]
-  (let [[m & ms] moves]
-    (let [game' (advance-game game m)
-          moves' (game-next-moves game')]
-      (if (seq ms)
-        (conj substack game ms game' moves')
-        (conj substack game' moves')))))
+  [[[game move] & rem-stack :as game-stack]]
+  (let [game' (advance-game game move)
+        moves' (game-next-moves game')]
+    (build-game-stack rem-stack game' moves')))
 
 
 (comment

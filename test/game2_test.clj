@@ -72,3 +72,12 @@
     (is (= boards (game-boards game)))
     (is (= moves (game-moves game)))))
 
+(deftest test-advance-game
+  (let [b1 (sample-board)
+        m1 (first (moves b1))
+        b2 (apply-move b1 m1)
+        m2 (first (moves b2))
+        game (build-game [b1 b2] [m1])
+        b3 (apply-move b2 m2)
+        expected (build-game [b1 b2 b3] [m1 m2])]
+    (is (= expected (advance-game game m2)))))

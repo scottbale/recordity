@@ -158,3 +158,10 @@
 (defn game-boards
   "The history of boards in the game. Returns a sequence of one or more boards."
   [game] (:boards game))
+
+(defn advance-game
+  [{:keys [boards moves] :as game} move]
+  (let [b (last boards)]
+    (build-game
+     (conj boards (apply-move b move))
+     (conj moves move))))

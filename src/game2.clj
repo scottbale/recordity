@@ -153,6 +153,8 @@
 
 (def game-next-moves (comp moves last :boards))
 
+(def game-score (comp board-score last :boards))
+
 (defn game-moves
   "The history of moves in the game. Returns a sequence of zero or move moves."
   [game] (:moves game))
@@ -189,6 +191,20 @@
   (let [game' (advance-game game move)
         moves' (game-next-moves game')]
     (build-game-stack rem-stack game' moves')))
+
+(defn complete-game-seq
+  [advance-game-fn game-moves-fn game-stack]
+  ;; (println ">>>>>>" game-stack)
+  (letfn [(body [[[game move] & rem-stack :as gs] safety-valve]
+            ;; (println ">>>>>>" safety-valve game move gs)
+            (if (or (== 0 safety-valve) (nil? game) (nil? move))
+              nil
+              (let [game' (advance-game-fn game move)
+                    moves' (game-moves-fn game')]
+                (if-not (seq moves')
+                  (concat [game'] (lazy-seq (body rem-stack (dec safety-valve))))
+                  (recur (build-game-stack rem-stack game' moves') (dec safety-valve))))))]
+    (body game-stack 15)))
 
 
 (comment

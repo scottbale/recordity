@@ -131,3 +131,45 @@
             expected-stack (-> gs1 (build-game-stack g3 moves3))]
         (is (= expected-stack (unit-of-work gs2')))))
     ))
+
+(deftest test-complete-game-seq
+  ;; Testing progress
+  ;; Provide two functions
+  ;; advance-game-fn - takes a game and a move, returns a game
+  ;; moves-fn - takes a game, returns a sequence of zero or more moves
+  ;; This test completely fabricates games and moves
+  (let [games [:g1 :g2 :g3 :g4]
+        game-moves {:g1 [:mA :mB]
+                    :g2 [:mC]
+                    :g3 [:mE :mF :mI :mJ]
+                    :g4 []
+                    :g5 [:mG]
+                    :g6 []
+                    :g7 []
+                    :g8 [:mH]
+                    :g9 []
+                    :g10 []}
+        game-successor {[:g1 :mA] :g2
+                        [:g1 :mB] :g8
+                        [:g8 :mH] :g3
+                        [:g2 :mC] :g4
+                        [:g3 :mE] :g5
+                        [:g3 :mF] :g7
+                        [:g5 :mG] :g6
+                        [:g3 :mI] :g9
+                        [:g3 :mJ] :g10}
+        game-fn (comp game-successor list)]
+    ;;(is (= [:g4 :g6 :g7 :g9 :g10] (complete-game-seq game-fn game-moves (build-game-stack :g1 (:g1 game-moves)))))
+    (is (= [:g4 :g6 :g7] (take 3 (complete-game-seq game-fn game-moves (build-game-stack :g1 (:g1 game-moves))))))
+    ))
+
+
+(comment
+
+  (let [m-fn (comp (partial take 2) game-next-moves)]
+    (doseq [g (take 3 (complete-game-seq advance-game m-fn (new-game-stack (new-game (sample-board)))))]
+      (println ">>>>>>score:" (game-score g))
+      (println (-> g :boards last board-str))))
+
+
+)

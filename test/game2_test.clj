@@ -81,3 +81,38 @@
         b3 (apply-move b2 m2)
         expected (build-game [b1 b2 b3] [m1 m2])]
     (is (= expected (advance-game game m2)))))
+
+(deftest test-new-game-stack
+  (let [b (sample-board)
+        g (new-game b)
+        ms (moves b)]
+    (is (= [ms g] (new-game-stack g)))))
+
+(deftest test-build-game-stack
+  (let [b1 (sample-board)
+        [m1 :as moves1] (moves b1)
+        g1 (new-game b1)
+        b2 (apply-move b1 m1)
+        moves2 (moves b2)
+        g2 (build-game [b1 b2] [m1])
+        gs1 (build-game-stack g1 moves1)
+        gs2 (build-game-stack gs1 g2 moves2)]
+    (is (= (list moves2 g2 moves1 g1) gs2))))
+
+(deftest test-unit-of-work
+  (let [b1 (sample-board)
+        [m1 & rem1 :as moves1] (moves b1)
+        g1 (new-game b1)
+        b2 (apply-move b1 m1)
+        [m2 & rem2 :as moves2] (moves b2)
+        g2 (build-game [b1 b2] [m1])
+        gs1 (build-game-stack g1 rem1)
+        gs2 (build-game-stack gs1 g2 moves2)]
+    (testing "unit of work - happy path"
+      (let [b3 (apply-move b2 m2)
+            moves3 (moves b3)
+            g3 (build-game [b1 b2 b3] [m1 m2])
+            expected-stack (-> gs1
+                               (build-game-stack g2 rem2)
+                               (build-game-stack g3 moves3))]
+        (is (= expected-stack (unit-of-work gs2)))))))

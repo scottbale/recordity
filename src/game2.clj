@@ -68,7 +68,7 @@
            (apply str)))))
 
 (defn build-board
-  "Build a board, accepting a sequence of indices in the range of 0 to 14, each representing an spot
+  "Build a board, accepting a sequence of indices in the range of 0 to 14, each representing a spot
   on the board for a peg to be located."
   [pegs]
   (reduce (comp short bit-set) empty-board pegs))
@@ -151,6 +151,8 @@
   [board]
   (build-game [board] []))
 
+(def game-next-moves (comp moves last :boards))
+
 (defn game-moves
   "The history of moves in the game. Returns a sequence of zero or move moves."
   [game] (:moves game))
@@ -165,3 +167,43 @@
     (build-game
      (conj boards (apply-move b move))
      (conj moves move))))
+
+(defn build-game-stack
+  ([game next-moves]
+   (list next-moves game))
+  ([game-stack game next-moves]
+   (concat (build-game-stack game next-moves) game-stack)))
+
+(defn new-game-stack
+  "Given a game, return an initial game stack, which is a sequence of size two. The first item is a
+  sequence of the remaining possible moves. The second item is the game."
+  [{:keys [boards] :as game}]
+  (build-game-stack game (-> boards first moves)))
+
+(defn unit-of-work
+  "Given a game stack, perform a unit of work and return a new game stack."
+  [[moves game & substack :as game-stack]]
+  (let [[m & ms] moves]
+    (let [game' (advance-game game m)
+          moves' (game-next-moves game')]
+      (conj substack game ms game' moves'))))
+
+
+(comment
+
+  (let [b (sample-board)
+        g (new-game b)
+        m (rand-nth (moves b))
+        {:keys [boards] :as g} (advance-game g m)
+        m (rand-nth (moves (last boards)))
+        {:keys [boards] :as g} (advance-game g m)
+        m (rand-nth (moves (last boards)))
+        {:keys [boards] :as g} (advance-game g m)
+        m (rand-nth (moves (last boards)))
+        {:keys [boards] :as g} (advance-game g m)
+        m (rand-nth (moves (last boards)))
+        {:keys [boards]} (advance-game g m)
+        ]
+    (println (board-str (last boards))))
+
+)

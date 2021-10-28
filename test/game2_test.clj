@@ -19,6 +19,12 @@
     (is (= (range 1 15) (pegs b)))
     (is (= [1 3 5] (pegs b2)))))
 
+(deftest test-board-score
+  (let [b1 (build-board [13])
+        b2 (build-board [1 3 5])]
+    (is (= 1 (board-score b1)))
+    (is (= 3 (board-score b2)))))
+
 (deftest test-board-str
   (let [expected (str  "        .\n"
                        "      x   x\n"
@@ -49,3 +55,20 @@
         one-move (list (build-move [0 1 3]))]
     (is (= one-move (moves b-one-move)))
     (is (empty? (moves b-no-moves)))))
+
+(deftest test-new-game
+  (let [board (sample-board)
+        game (new-game board)]
+    (is (empty? (game-moves game)))
+    (is (= [board] (game-boards game)))))
+
+(deftest test-build-game
+  (let [[m1 m2 :as moves] [(build-move [5 2 0])
+                           (build-move [7 4 2])]
+        boards [(sample-board)
+                (-> (sample-board) (apply-move m1))
+                (-> (sample-board) (apply-move m1) (apply-move m2))]
+        game (build-game boards moves)]
+    (is (= boards (game-boards game)))
+    (is (= moves (game-moves game)))))
+

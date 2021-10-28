@@ -32,14 +32,12 @@
   "
   (:require
    [debugger :refer [dbg]]
-   [clojure.string :as str]
-   [clojure.tools.namespace.repl :refer [refresh]])
-  )
+   [clojure.tools.namespace.repl :refer [refresh]]))
 
 (def full-board (short 32767))
 (def empty-board (short 0))
 
-(def axes
+(def ^:private axes
   ;; vector of vectors - each contained vector is three-to-five indices representing a row of at
   ;; least three contiguous spaces on the board that must be searched for possible moves. Refer to
   ;; diagram above.
@@ -51,36 +49,64 @@
    [5 4 3] [9 8 7 6] [14 13 12 11 10] ;; zs reversed
    ])
 
-(defn board-str [board]
-  (let [zs [[0] [1 2] [3 4 5] [6 7 8 9] [10 11 12 13 14]]
-        padding (constantly " ")]
+(def ^:private board-str-indices [[0] [1 2] [3 4 5] [6 7 8 9] [10 11 12 13 14]])
+
+(defn board-str
+  "Return a string representation of the board, similar to the diagram at the top of this namespace."
+  [board]
+  (let [padding (constantly " ")]
     (letfn [(pegstr [i]
               (if (bit-test board i) "x" "."))
             (rowstrs [[indices pads]]
               (concat
                (repeatedly pads padding)
                (interpose "   " (map pegstr indices))))]
-      (str/join (apply concat (interpose "\n" (map rowstrs (map vector zs [8 6 4 2 0]))))))))
+      (->> (map vector board-str-indices [8 6 4 2 0])
+           (map rowstrs)
+           (interpose "\n")
+           (apply concat)
+           (apply str)))))
 
-(defn build-board [pegs]
+(defn build-board
+  "Build a board, accepting a sequence of indices in the range of 0 to 14, each representing an spot
+  on the board for a peg to be located."
+  [pegs]
   (reduce (comp short bit-set) empty-board pegs))
 
 (defn sample-board []
   (build-board (range 1 15)))
 
-(defn pegs [board]
+(defn pegs
+  "Return a sequence of longs representing the indices of the pegs on the board."
+  [board]
   (filter (partial bit-test board) (range 15)))
 
-(defn build-move [[moving-peg jumped-peg target-peg :as pegs]]
+(def board-score (comp count pegs))
+
+(defn build-move
+  "Build a move, specifying the indices of the three pegs in order: the peg to do the 'jumping', the
+  peg to be jumped (and removed), and the empty spot for the first peg to land in."
+  [[moving-peg jumped-peg target-peg :as pegs]]
   ;; return a pair of shorts
+  ;; The first short is the single bit representing the target peg
+  ;; The second short is the two bits to be cleared on the board, representing the
+  ;; two pegs being removed from the board
   (list
    (short (bit-set empty-board target-peg))
    (reduce (comp short bit-clear) full-board (take 2 pegs))))
 
-(defn apply-move [board [bits all-except-bits :as move]]
+(defn apply-move
+  "Given a board and a move, apply the move to the board, returning a new resulting board."
+  [board [set-bit unset-bits :as move]]
+  ;; Do bitwise operations with the two shorts representing the move
+  ;; The first short is a single bit to be set, representing the target peg. So do a
+  ;; bitwise-or with the game board.
+  ;; The second short is the two bits being unset, representing the other two pegs in
+  ;; the move, whose spots on the board are being vacated. Unset those bits on the
+  ;; board by doing a bitwise-and.
   (-> board
-      (bit-or bits)
-      (bit-and all-except-bits)
+      (bit-or set-bit)
+      (bit-and unset-bits)
       short))
 
 (defn move?
@@ -114,9 +140,21 @@
   [board]
   (mapcat (partial moves-along-indices board) axes))
 
-(comment
+(defn build-game
+  "A game is a history of boards and moves between boards. A game is complete if the final board has
+  zero moves."
+  [boards moves]
+  {:boards boards
+   :moves moves})
 
+(defn new-game
+  [board]
+  (build-game [board] []))
 
+(defn game-moves
+  "The history of moves in the game. Returns a sequence of zero or move moves."
+  [game] (:moves game))
 
-
-  )
+(defn game-boards
+  "The history of boards in the game. Returns a sequence of one or more boards."
+  [game] (:boards game))

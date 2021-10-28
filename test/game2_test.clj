@@ -115,4 +115,15 @@
             expected-stack (-> gs1
                                (build-game-stack g2 rem2)
                                (build-game-stack g3 moves3))]
-        (is (= expected-stack (unit-of-work gs2)))))))
+        (is (= expected-stack (unit-of-work gs2)))))
+    (testing "top of stack has exactly one move - new stack should omit that game"
+      (let [gs2' (build-game-stack gs1 g2 [m2])
+            b3 (apply-move b2 m2)
+            moves3 (moves b3)
+            g3 (build-game [b1 b2 b3] [m1 m2])
+            ;; expected result omits gs2' entirely because the game at the top of that stack will have
+            ;; been entirely traversed (all moves tried). This unit of work will try the last remaining
+            ;; move.
+            expected-stack (-> gs1 (build-game-stack g3 moves3))]
+        (is (= expected-stack (unit-of-work gs2')))))
+    ))

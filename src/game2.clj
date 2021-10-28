@@ -2,6 +2,7 @@
   "peg game
 
   Board looks like this:
+
           x
         x   x
       x   x   x
@@ -21,14 +22,13 @@
         10  11  12  13  14
   x ->                     <- y
 
-  Bit set at index represents whether a peg is in that slot or not.
+  Bit set at index represents whether a peg is in that spot or not.
 
-  A valid move is for a peg to jump over another peg into an empty slot, and the jumped-over peg is
+  A valid move is for a peg to jump over another peg into an empty spot, and the jumped-over peg is
   removed from the board. Repeat until no more moves are possible. Score is number of remaining
   pegs. Goal is lowest score. Lowest possible score is 1.
 
   Represent a move as a pair of shorts to use in bitwise operations against the game board.
-
   "
   (:require
    [debugger :refer [dbg]]
@@ -162,6 +162,8 @@
   [game] (:boards game))
 
 (defn advance-game
+  "Given a game and a move to be performed, perform the move and return a new game representing the
+  new state of the game"
   [{:keys [boards moves] :as game} move]
   (let [b (last boards)]
     (build-game
@@ -186,7 +188,9 @@
   (let [[m & ms] moves]
     (let [game' (advance-game game m)
           moves' (game-next-moves game')]
-      (conj substack game ms game' moves'))))
+      (if (seq ms)
+        (conj substack game ms game' moves')
+        (conj substack game' moves')))))
 
 
 (comment

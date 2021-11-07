@@ -86,7 +86,7 @@
   (let [b (sample-board)
         g (new-game b)
         ms (moves b)
-        expected (map vector (repeatedly (constantly g)) ms)]
+        expected (map vector (repeat g) ms)]
     (is (= expected (new-game-stack g)))))
 
 (deftest test-build-game-stack
@@ -99,8 +99,8 @@
         gs1 (build-game-stack g1 moves1)
         gs2 (build-game-stack gs1 g2 moves2)
         expected (concat
-                  (map vector (repeatedly (constantly g2)) moves2)
-                  (map vector (repeatedly (constantly g1)) moves1))]
+                  (map vector (repeat g2) moves2)
+                  (map vector (repeat g1) moves1))]
     (is (= expected gs2))))
 
 (deftest test-unit-of-work
@@ -159,8 +159,8 @@
                         [:g3 :mI] :g9
                         [:g3 :mJ] :g10}
         game-fn (comp game-successor list)]
-    ;;(is (= [:g4 :g6 :g7 :g9 :g10] (complete-game-seq game-fn game-moves (build-game-stack :g1 (:g1 game-moves)))))
-    (is (= [:g4 :g6 :g7] (take 3 (complete-game-seq game-fn game-moves (build-game-stack :g1 (:g1 game-moves))))))
+    (is (= [:g4 :g6 :g7 :g9 :g10] (complete-game-seq game-fn game-moves (build-game-stack :g1 (:g1 game-moves)))))
+    ;;(is (= [:g4 :g6 :g7] (take 3 (complete-game-seq game-fn game-moves (build-game-stack :g1 (:g1 game-moves))))))
     ))
 
 
@@ -171,5 +171,7 @@
       (println ">>>>>>score:" (game-score g))
       (println (-> g :boards last board-str))))
 
+seq
 
+(lazy-seq [:a :b :c])
 )

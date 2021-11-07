@@ -195,16 +195,16 @@
 (defn complete-game-seq
   [advance-game-fn game-moves-fn game-stack]
   ;; (println ">>>>>>" game-stack)
-  (letfn [(body [[[game move] & rem-stack :as gs] safety-valve]
+  (letfn [(step [[[game move] & rem-stack :as gs] safety-valve]
             ;; (println ">>>>>>" safety-valve game move gs)
             (if (or (== 0 safety-valve) (nil? game) (nil? move))
               nil
               (let [game' (advance-game-fn game move)
                     moves' (game-moves-fn game')]
                 (if-not (seq moves')
-                  (concat [game'] (lazy-seq (body rem-stack (dec safety-valve))))
+                  (concat [game'] (lazy-seq (step rem-stack (dec safety-valve))))
                   (recur (build-game-stack rem-stack game' moves') (dec safety-valve))))))]
-    (body game-stack 15)))
+    (step game-stack 15)))
 
 
 (comment

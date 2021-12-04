@@ -1,18 +1,21 @@
 (ns bank
   "https://codingdojo.org/kata/BankOCR/"
   (:require
-   [clojure.java.io :as io]))
+   [clojure.java.io :as io]
+   [debugger :refer [dbg]]))
 
 
 (def test1
   [" _  _  _  _  _  _  _  _  _ "
    "| || || || || || || || || |"
-   "|_||_||_||_||_||_||_||_||_|"])
+   "|_||_||_||_||_||_||_||_||_|"
+   "                           "])
 
 (def testN
   ["    _  _     _  _  _  _  _ " 
    "  | _| _||_||_ |_   ||_||_|" 
-   "  ||_  _|  | _||_|  ||_| _|"])
+   "  ||_  _|  | _||_|  ||_| _|"
+   "                           "])
 
 (defn blocks 
   "Transforms a sequence of three raw input lines (encoding a nine-digit account number) into a
@@ -48,12 +51,25 @@
   [lines]
   (map digits (blocks lines)))
 
+(defn runner
+  "Input is a sequence of strings representing one or more 9-digit numbers"
+  [input]
+  (let [all-raws (partition-all 3 4 input)
+        ;; each is a list of nine triples, each triple is the three strings that, stacked, form one of the nine digits
+        acct-numbers-triples (map blocks all-raws)]
+    (map
+     (fn [acct-number-triples]
+       (map digits acct-number-triples))
+     acct-numbers-triples)))
+
 (comment
 
-  (map read-example (partition-all 3 4 (record-seq "digits.txt")))
+  (runner testN)
+  (runner (concat test1 testN))
+  ;; note last acct number in this file appears malformed
+  (runner (record-seq "digits.txt"))
 
   (blocks test1)
-
   (blocks testN)
 
   (read-account-number testN) ;; (1 2 3 4 5 6 7 8 9)
